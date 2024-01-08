@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+.avatar{
+  width: 80px;
+  height: 80px;
+}
+.stationCodes{
+  border: 3px solid black;
+}
