@@ -2,12 +2,15 @@ import './App.css';
 import {createUserWithEmailAndPassword,signOut,signInWithEmailAndPassword,deleteUser, updateProfile
 } from "firebase/auth";
 import {auth,db,storage} from "./firebase-config";
-import {collection,getDocs,updateDoc, doc ,deleteDoc,setDoc,getDoc,arrayUnion,arrayRemove} from "firebase/firestore";
+import {collection,getDocs,updateDoc, doc ,deleteDoc,setDoc,getDoc,arrayUnion,arrayRemove,addDoc} from "firebase/firestore";
 import {ref,uploadBytes,getDownloadURL} from "firebase/storage";
 import {useState,useEffect} from 'react';
 import Radiobuttons from './components/Radiobuttons';
 import Search from './components/Search';
-// import SearchAPI from './SearchAPI';
+import SearchAPI from './components/SearchAPI';
+const cors=require('cors');
+// const express=require('express');
+// const app=express();
 
 function App() {
   // Authentication Only
@@ -109,7 +112,6 @@ function App() {
     setData(result.data());
     setList(list.bookings);
   }
-
   //Profile Image upload
   const [photo, setPhoto] = useState(null)
   const [photoURL, setPhotoURL] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png")
@@ -133,20 +135,30 @@ function App() {
   },[auth.currentUser]);
 
   //Booking Submit
-  const handleBooking=async()=>{
+  const handleAddBooking=async(data,book)=>{
     const user=auth.currentUser;
-    const userDoc = doc(db,"bookList",user.uid);
-    const newFields={from:data.from,to:data.to};
+    const userBookList = doc(db,"bookList",user.uid);
+    const newFields={from:data.from,to:data.to,date:data.date,booked:false};
     console.log(newFields);
-    await updateDoc(userDoc,{bookings:arrayUnion(newFields)});
+    await updateDoc(userBookList,{bookings:arrayUnion(newFields)});
   }
   const handleCancel=async(element)=>{
     const userBookList = doc(db,"bookList",auth.currentUser.uid);
     const listSnapshot =await getDoc(userBookList);
     const list=listSnapshot.data();
-    const mapIndex = list.bookings.findIndex((map) => map.pnr === element.pnr);
+    const mapIndex = list.bookings.findIndex((map) => (map.from === element.from && map.to===element.to && map.date===element.date));
     await updateDoc(userBookList, {bookings: arrayRemove(list.bookings[mapIndex])});
-    console.log(`${element.pnr} PNR cancelled`);
+    console.log(`ticket cancelled`);
+  }
+  const handlePayment=async(element)=>{
+    const userBookList = doc(db,"bookList",auth.currentUser.uid);
+    const listSnapshot =await getDoc(userBookList);
+    const list=listSnapshot.data();
+    const mapIndex = list.bookings.findIndex((map) => (map.from === element.from && map.to===element.to && map.date===element.date));
+    list.bookings[mapIndex].booked=true;
+    console.log(list);
+    await updateDoc(userBookList, list);
+    console.log(`ticket booked`);
   }
 
   return (
@@ -161,14 +173,18 @@ function App() {
       return(
         <div>
           <div>
-          <strong>{element.pnr} {element.from} {element.to}</strong> <button onClick={()=>{handleCancel(element)}}>cancel</button>
+          <strong>{element.booked?'true':'false'} {element.date} {element.from} {element.to}</strong> 
+          {(()=>{
+            if(!element.booked){return <button onClick={()=>{handlePayment(element)}}>pay</button>;}
+            else{return <button>payed</button>}
+          })()}
+          {/* <button onClick={()=>{handlePayment(element)}}>pay</button> */}
+          <button onClick={()=>{handleCancel(element)}}>cancel</button>
         </div><br />
         </div>
       )
     })}
-    {
-      
-    }
+    
     <input placeholder='email' onChange={(e)=>{setloginEmail(e.target.value)}}/>
     <input placeholder='password' onChange={(e)=>{setloginPassword(e.target.value)}}/>
     <button onClick={login}>Login</button>
@@ -206,11 +222,12 @@ function App() {
       <button type='submit'>Update</button><br />
       <h2>Book</h2>
     </form>
-      <input type="number" name="pnr" onChange={handleChange} value={data?.pnr} placeholder='PNR'/>
+      {/* <input type="number" name="pnr" onChange={handleChange} value={data?.pnr} placeholder='PNR'/>
       <input type="text" name="from" onChange={handleChange} value={data?.from} placeholder='From'/>
       <input type="text" name="to" onChange={handleChange} value={data?.to} placeholder='To'/>
-      <button onClick={handleBooking}>Book</button> <br /><br /><br /><br />
-      <Search handleBooking={handleBooking} setData1={setData}/> <br /><br /><br />
+      <button onClick={handleAddBooking}>Book</button> <br /><br /><br /><br /> */}
+      <Search handleAddBooking={handleAddBooking} bookList={list}/> <br /><br /><br />
+      <SearchAPI/>
     </div>
   );
 }
