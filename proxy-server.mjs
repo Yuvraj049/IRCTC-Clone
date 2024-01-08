@@ -21,6 +21,7 @@ app.get('/trains-between-stations', async (req, res) => {
   }
 });
 
+
 app.listen(port, () => {
   console.log(`Proxy server is running on port ${port}`);
 });
