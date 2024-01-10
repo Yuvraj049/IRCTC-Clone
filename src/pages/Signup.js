@@ -6,6 +6,7 @@ import {doc,setDoc} from "firebase/firestore";
 import {useState} from 'react';
 
 function Signup() {
+  const user=auth.currentUser;
   const navigate=useNavigate();
   const [data,setData] = useState({email:"",password:""});
   const handleChange=(e)=>{
@@ -15,6 +16,11 @@ function Signup() {
   }
   const registerUser = async(e)=>{
     e.preventDefault();
+    if(user){
+      navigate("/profile");
+      alert("First Log Out from your account");
+      return;
+    }
     try{
       const result= await createUserWithEmailAndPassword(auth,data.email,data.password)
       await setDoc(doc(db,"users",result.user.uid),{email:data.email,password:data.password});
@@ -32,12 +38,13 @@ function Signup() {
   return (
     <div>
       <h1>Signup</h1>
+      <Link to={"/"}>Home</Link>
+      <Link to={"/#aboutUs"}>About Us</Link>
       <form onSubmit={registerUser}>
       <input name='email' placeholder='email' onChange={handleChange} value={data.email}/>
       <input name='password' placeholder='password' onChange={handleChange} value={data.password}/>
       <button type='submit'>SignUp</button>
       </form>
-      <Link to={"/"}>Home</Link>
       <h4>Already a User?</h4><Link to="/login">Login</Link>
     </div>
   )

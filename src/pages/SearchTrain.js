@@ -1,14 +1,18 @@
 import {React,useState,useEffect} from 'react'
-import {Link} from 'react-router-dom'
+import {Link,useNavigate} from 'react-router-dom'
 import {onAuthStateChanged} from "firebase/auth";
 import {auth,db} from "../firebase-config";
 import {updateDoc,doc,getDoc,arrayUnion} from "firebase/firestore";
 import records from '../records.json';
 
 function SearchTrain() {
+    const navigate=useNavigate();
     const [user, setUser] = useState(null); 
     useEffect(()=>{
       onAuthStateChanged(auth,(currentUser)=>{
+        if(!currentUser){
+          navigate("/");
+        }
         setUser(currentUser); 
       })
     },[])
@@ -105,6 +109,7 @@ function SearchTrain() {
         <h4>{user?.email}</h4>
         <Link to="/profile">Profile</Link><br />
         <Link to="/booklist">BookList</Link>
+        <Link to={"/#aboutUs"}>About Us</Link>
         <div>
       <form onSubmit={handleSearch}>
         <input placeholder='from' name='from' onChange={handleChange} value={data.from}/>

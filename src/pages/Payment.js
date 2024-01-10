@@ -10,6 +10,9 @@ function Payment() {
     const [user, setUser] = useState(null); 
     useEffect(()=>{
         onAuthStateChanged(auth,(currentUser)=>{
+            if(!currentUser){
+                navigate("/");
+            }
             setUser(currentUser); 
         })
     },[])

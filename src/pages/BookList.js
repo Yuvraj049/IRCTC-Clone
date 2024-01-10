@@ -10,6 +10,9 @@ function BookList() {
   const [booklist, setBooklist] = useState([]);
   useEffect(()=>{
     onAuthStateChanged(auth,(currentUser)=>{
+      if(!currentUser){
+        navigate("/");
+      }
       setUser(currentUser); 
     })
   },[])
@@ -40,6 +43,7 @@ function BookList() {
         <h4>{user?.email}</h4>
         <Link to="/profile">Profile</Link><br />
         <Link to="/searchtrain">SearchTrain</Link>
+        <Link to={"/#aboutUs"}>About Us</Link>
         {booklist.map(element=>{
       return(
         <div>

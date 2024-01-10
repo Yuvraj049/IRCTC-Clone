@@ -12,7 +12,6 @@ function Home() {
       setUser(currentUser);  
     });
   },[])
-
   return (
     <div>
       <h1>Home</h1>

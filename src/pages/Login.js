@@ -4,6 +4,7 @@ import {auth} from "../firebase-config";
 import {signInWithEmailAndPassword} from "firebase/auth";
 
 function Login() {
+  const user=auth.currentUser;
   const navigate=useNavigate();
   const [data,setData] = useState({email:"",password:""});
   const handleChange=(e)=>{
@@ -13,6 +14,11 @@ function Login() {
   }
   const loginUser = async(e)=>{
     e.preventDefault();
+    if(user){
+      navigate("/profile");
+      alert("First Log Out from your account");
+      return;
+    }
     try{
       await signInWithEmailAndPassword(auth,data.email,data.password)
       navigate('/searchtrain');
@@ -28,7 +34,8 @@ function Login() {
     <div>
       <h1>Login</h1>
       <Link to={"/"}>Home</Link><br />
-      <Link to={"/signup"}>SignUp</Link>
+      <Link to={"/signup"}>SignUp</Link><br />
+      <Link to={"/#aboutUs"}>About Us</Link>
       <form onSubmit={loginUser}>
       <input name='email' placeholder='email' onChange={handleChange} value={data.email}/>
       <input name='password' placeholder='password' onChange={handleChange} value={data.password}/>

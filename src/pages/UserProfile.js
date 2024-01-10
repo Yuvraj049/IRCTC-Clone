@@ -8,25 +8,27 @@ import Radiobuttons from '../components/Radiobuttons'
 
 function UserProfile() {
     const navigate=useNavigate();
+    const [data,setData] = useState({name:"",email:"",phone:"",dob:"",gender:""});
     const [user, setUser] = useState(null); 
     useEffect(()=>{
       onAuthStateChanged(auth,(currentUser)=>{
+        console.log(user);
+        
+        if(!currentUser){
+          navigate("/");
+        }
         setUser(currentUser); 
       })
     },[])
-
-    const [data,setData] = useState({name:"",email:"",phone:0,dob:"",gender:""});
-    
     useEffect(()=>{
       const setUserData=async()=>{
         const userDoc = doc(db,"users",user.uid);
         const result =await getDoc(userDoc);
         setData(result.data());
-        console.log(result.data());
       }
       if(user){
         setUserData();
-      };
+      }
     },[user])
 
     const handleChange=(e)=>{
@@ -37,6 +39,7 @@ function UserProfile() {
     const handleSubmit=(e)=>{
       e.preventDefault();
       const userDoc = doc(db,"users",user.uid);
+      console.log(data);
       const newFields = {name:data.name,phone:Number(data.phone),dob:data.dob,gender:data.gender};
       console.log(newFields);
       updateDoc(userDoc,newFields);
@@ -97,13 +100,13 @@ function UserProfile() {
       <Link to="/">Home</Link><br />
       <Link to="/searchtrain">SearchTrain</Link><br />
       <Link to="/booklist">BookList</Link>
-      
+      <Link to={"/#aboutUs"}>About Us</Link>
       <h2>Update User</h2>
       <form onSubmit={handleSubmit}>
-        <input type="text" name="name" placeholder='name' onChange={handleChange} value={data?.name}/>
+        <input type="text" name="name" placeholder='name' onChange={handleChange} value={data.name} required/>
         <input type="email" placeholder='email' defaultValue={user?.email} readOnly/>
-        <input type="number" name="phone" placeholder='phone number' onChange={handleChange} value={data?.phone}/>
-        <input type="date" name="dob"  onChange={handleChange} value={data?.dob}/>
+        <input type="number" name="phone" placeholder='phone number' onChange={handleChange} value={data.phone} required/>
+        <input type="date" name="dob"  onChange={handleChange} value={data.dob} required/>
         <Radiobuttons handleChange={handleChange} data={data}/>
         <button type='submit'>Update</button><br />
       </form>
