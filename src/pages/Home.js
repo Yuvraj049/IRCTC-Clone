@@ -4,6 +4,8 @@ import AboutUs from '../components/AboutUs'
 import ContactUs from '../components/ContactUs'
 import {auth} from "../firebase-config"
 import {onAuthStateChanged} from "firebase/auth";
+import Footer from '../components/Footer'
+import Features from '../components/Features'
 
 function Home() {
   const [user, setUser] = useState(null);  
@@ -14,12 +16,12 @@ function Home() {
   },[])
   return (
     <div>
-      <h1>Home</h1>
-      <h4>{user?.email}</h4>
       <Navbar/>
-      <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+      <h4>{user?.email}</h4>
+      <Features/>
       <AboutUs/>
       <ContactUs/>
+      <Footer/>
     </div>
   )
 }

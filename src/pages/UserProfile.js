@@ -10,12 +10,14 @@ function UserProfile() {
     const navigate=useNavigate();
     const [data,setData] = useState({name:"",email:"",phone:"",dob:"",gender:""});
     const [user, setUser] = useState(null); 
+    if(user){
+      console.log(user.photoURL);
+    }
     useEffect(()=>{
       onAuthStateChanged(auth,(currentUser)=>{
         console.log(user);
-        
         if(!currentUser){
-          navigate("/");
+          navigate("/nopage");
         }
         setUser(currentUser); 
       })
@@ -46,7 +48,7 @@ function UserProfile() {
       alert("Profile Updated");
     }
     const [photo, setPhoto] = useState(null)
-    const [photoURL, setPhotoURL] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png")
+    const url="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
 
     const handleFileChange=(e)=>{
       if(e.target.files[0]){
@@ -62,12 +64,20 @@ function UserProfile() {
       window.location.reload();
     }
     const logOut=()=>{
-        signOut(auth);
+      signOut(auth).then(()=>{
+          navigate("/");
+        });
         console.log(`${user.email} logged out`);
-        navigate("/");
-    }
-    const deleteAccount= ()=>{
-      if(window.confirm("Do you really want to delete your account?")){
+      }
+      const deleteAccount= ()=>{
+        if(window.confirm("Do you really want to delete your account?")){
+          deleteUser(user).then(() => {
+            console.log(`deleted ${user.email}`);
+          }).catch((error) => {
+            alert("Requires Recent Login!")
+            console.log(error);
+            return;
+          });
         const userDoc = doc(db,"users",user.uid);
         const userBookList = doc(db,"booklist",user.uid);
         deleteDoc(userDoc);
@@ -75,24 +85,13 @@ function UserProfile() {
         
         const desertRef = ref(storage, `${user.uid}.png`);
         deleteObject(desertRef).then(() => {
+          navigate("/");
           console.log("first")
         }).catch((error) => {
           console.log(error.message);
         });
-        
-        deleteUser(user).then(() => {
-          console.log(`deleted ${user.email}`);
-        }).catch((error) => {
-          console.log(error);
-        });
-        navigate("/");
       }
     }
-    useEffect(()=>{
-      if(user?.photoURL){
-        setPhotoURL(user.photoURL);
-      }
-    },[user]);
   return (
     <div>
       <h2>UserProfile</h2>
@@ -112,7 +111,7 @@ function UserProfile() {
       </form>
       <input type="file" placeholder='image' onChange={handleFileChange}/>
       <button onClick={handleUpload}>Upload</button>
-      <img src={photoURL} alt="Avatar" className='avatar'/><br /><br /><br /><br />
+      <img src={user && user.photoURL?user.photoURL:url} alt="Avatar" className='avatar'/><br /><br /><br /><br />
       <button onClick={logOut}>LogOut</button>
       <button onClick={deleteAccount}>Delete Account</button>
     </div>

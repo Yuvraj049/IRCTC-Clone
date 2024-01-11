@@ -27,13 +27,18 @@ function BookList() {
       setList();
     };
   },[user])
+  
   const handleCancel=async(element)=>{
     const userBookList = doc(db,"booklist",user.uid);
+    console.log(user);
+    console.log(userBookList);
     const listSnapshot =await getDoc(userBookList);
     const list=listSnapshot.data();
     const mapIndex = list.bookings.findIndex((map) => (map.from === element.from && map.to===element.to && map.date===element.date));
+    console.log(mapIndex);
     await updateDoc(userBookList, {bookings: arrayRemove(list.bookings[mapIndex])});
     console.log(`ticket cancelled`);
+    window.location.reload();
   }
   
 
@@ -44,7 +49,7 @@ function BookList() {
         <Link to="/profile">Profile</Link><br />
         <Link to="/searchtrain">SearchTrain</Link>
         <Link to={"/#aboutUs"}>About Us</Link>
-        {booklist.map(element=>{
+        { booklist && booklist.map(element=>{
       return(
         <div>
           <div>
