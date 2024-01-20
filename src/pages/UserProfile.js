@@ -17,7 +17,7 @@ function UserProfile() {
       onAuthStateChanged(auth,(currentUser)=>{
         console.log(user);
         if(!currentUser){
-          navigate("/nopage");
+          navigate("/");
         }
         setUser(currentUser); 
       })

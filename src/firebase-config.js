@@ -4,7 +4,7 @@ import {getFirestore} from "firebase/firestore"
 import {getStorage} from "firebase/storage";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyA6NVTpWi9G1cy9RvJUVOfCSiMBPKE7vYM",
+    apiKey: process.env.REACT_APP_FIREBASE_KEY,
     authDomain: "travel-booking-c3dc1.firebaseapp.com",
     projectId: "travel-booking-c3dc1",
     storageBucket: "travel-booking-c3dc1.appspot.com",
