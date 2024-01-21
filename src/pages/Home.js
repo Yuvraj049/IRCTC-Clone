@@ -16,7 +16,7 @@ function Home() {
   },[])
   return (
     <div>
-      <Navbar/>
+      <Navbar navbar={[["Login","/login"],["Register","/signup"]]} aboutus={true} contactus={true}/>
       <h4>{user?.email}</h4>
       <Features/>
       <AboutUs/>
