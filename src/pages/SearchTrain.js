@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase-config";
 import { updateDoc, doc, getDoc, arrayUnion } from "firebase/firestore";
 import records from '../records.json';
+import stations from '../stations.json';
 import Navbar from '../components/Navbar';
 
 function SearchTrain() {
@@ -30,7 +31,8 @@ function SearchTrain() {
   }, [user])
 
   const [data, setData] = useState({});
-  const [results, setResults] = useState([]);
+  const [results_from, setResults_from] = useState([]);
+  const [results_to, setResults_to] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [booklist, setBooklist] = useState([]);
 
@@ -42,26 +44,24 @@ function SearchTrain() {
   }
   const Search = async (name, value) => {
     if (value !== "") {
-      if (name === 'from') {
-        const results = records.data.filter((element) => {
-          return element && element.from_station_name && element.from_station_name.toLowerCase().includes(value.toLowerCase());
+        const results = stations.stations.filter((element) => {
+          return element && element.state && element.state.toLowerCase().startsWith(value.trim().toLowerCase());
         });
         console.log(results);
-        setResults(results);
-      }
-      if (name === 'to') {
-        const results = records.data.filter((element) => {
-          return element && element.to_station_name && element.to_station_name.toLowerCase().includes(value.toLowerCase());
-        });
-        console.log(results);
-        setResults(results);
-      }
+        if (name === 'from') {
+          setResults_from(results);
+        }else{
+          setResults_to(results);
+        }
     } else {
-      setResults([]);
+      setResults_from([]);
+      setResults_to([]);
     }
   }
   const handleClick = (name, value) => {
     setData({ ...data, [name]: value });
+    setResults_from([]);
+    setResults_to([]);
   }
   const handleSearch = (e) => {
     e.preventDefault();
@@ -79,6 +79,7 @@ function SearchTrain() {
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
+  
   const renderIfinBookList = (element) => {
     console.log(element);
     if (isMatched(element)) {
@@ -113,21 +114,21 @@ function SearchTrain() {
   return (
     <div>
 
-      <Navbar navbar={[["Home", "/"], ["BookList", "/booklist"], ["About Us", "/#aboutUs"]]} />
+      <Navbar navbar={[["Home", "/"], ["Book List", "/booklist"], ["About Us", "/#aboutUs"]]} />
       <h1 class="mt-5 text-3xl font-bold mb-20">Search your Journey</h1>
       <div>
         <form onSubmit={handleSearch}>
           {/* <input placeholder='from' name='from' onChange={handleChange} value={data.from}/> */}
           <div class="w-1/4 m-auto">
             <label for="from" class="flex mb-1 text-xl font-medium text-slate-700"> From: </label>
-            <input type="text" name='from' onChange={handleChange} value={data.from} required class="w-full rounded-md border-2 border-[#e0e0e0] bg-white text-center px-3 text-lg text-slate-800 outline-none focus:border-[#6A64F1] focus:shadow-md" />
+            <input autocomplete="off" type="text" name='from' onChange={handleChange} value={data.from} required class="w-full rounded-md border-2 border-[#e0e0e0] bg-white text-center px-3 text-lg text-slate-800 outline-none focus:border-[#6A64F1] focus:shadow-md" />
           </div>
           {
-            data.from && results.slice(0, 2).map((user) => {
+            data.from && results_from.slice(0, 2).map((user) => {
               return (
-                <div className="stationCodes" onClick={() => { handleClick("from", user.from) }}>
-                  <h4>{user.from_station_name}</h4>
-                  <h4>{user.from}</h4>
+                <div className="stationCodes" onClick={() => { handleClick("from", user.code) }}>
+                  <h4>{user.code}</h4>
+                  <h4>{user.state}</h4>
                 </div>
               )
             })
@@ -138,14 +139,14 @@ function SearchTrain() {
           {/* <input placeholder='to' name='to' onChange={handleChange} value={data.to} /> */}
           <div class="w-1/4 m-auto">
             <label for="to" class="flex mb-1 text-xl font-medium text-slate-700"> To: </label>
-            <input type="text" name='to' onChange={handleChange} value={data.to} required class="w-full rounded-md border-2 border-[#e0e0e0] bg-white text-center px-3 text-lg text-slate-800 outline-none focus:border-[#6A64F1] focus:shadow-md" />
+            <input autocomplete="off" type="text" name='to' onChange={handleChange} value={data.to} required class="w-full rounded-md border-2 border-[#e0e0e0] bg-white text-center px-3 text-lg text-slate-800 outline-none focus:border-[#6A64F1] focus:shadow-md" />
           </div>
           {
-            data.to && results.slice(0, 2).map((user) => {
+            data.to && results_to.slice(0, 2).map((user) => {
               return (
-                <div className="stationCodes" onClick={() => { handleClick("to", user.to) }}>
-                  <h4>{user.to_station_name}</h4>
-                  <h4>{user.to}</h4>
+                <div className="stationCodes" onClick={() => { handleClick("to", user.code) }}>
+                  <h4>{user.code}</h4>
+                  <h4>{user.state}</h4>
                 </div>
               )
             })
