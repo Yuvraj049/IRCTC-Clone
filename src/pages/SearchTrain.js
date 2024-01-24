@@ -44,15 +44,15 @@ function SearchTrain() {
   }
   const Search = async (name, value) => {
     if (value !== "") {
-      const results = stations.stations.filter((element) => {
-        return element && element.state && element.state.toLowerCase().startsWith(value.trim().toLowerCase());
-      });
-      console.log(results);
-      if (name === 'from') {
-        setResults_from(results);
-      } else {
-        setResults_to(results);
-      }
+        const results = stations.stations.filter((element) => {
+          return element && element.state && element.state.toLowerCase().startsWith(value.trim().toLowerCase());
+        });
+        console.log(results);
+        if (name === 'from') {
+          setResults_from(results);
+        }else{
+          setResults_to(results);
+        }
     } else {
       setResults_from([]);
       setResults_to([]);
@@ -79,22 +79,16 @@ function SearchTrain() {
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
-
+  
   const renderIfinBookList = (element) => {
     console.log(element);
     if (isMatched(element)) {
       return (
-        <button class="mt-5 py-2 px-4 inline-flex items-center gap-x-2 text-sm text-blue-900 font-semibold rounded-lg border-2  border-slate-600 bg-blue-300 text-white  disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4"> <path fill-rule="evenodd" d="M15 8c0 .982-.472 1.854-1.202 2.402a2.995 2.995 0 0 1-.848 2.547 2.995 2.995 0 0 1-2.548.849A2.996 2.996 0 0 1 8 15a2.996 2.996 0 0 1-2.402-1.202 2.995 2.995 0 0 1-2.547-.848 2.995 2.995 0 0 1-.849-2.548A2.996 2.996 0 0 1 1 8c0-.982.472-1.854 1.202-2.402a2.995 2.995 0 0 1 .848-2.547 2.995 2.995 0 0 1 2.548-.849A2.995 2.995 0 0 1 8 1c.982 0 1.854.472 2.402 1.202a2.995 2.995 0 0 1 2.547.848c.695.695.978 1.645.849 2.548A2.996 2.996 0 0 1 15 8Zm-3.291-2.843a.75.75 0 0 1 .135 1.052l-4.25 5.5a.75.75 0 0 1-1.151.043l-2.25-2.5a.75.75 0 1 1 1.114-1.004l1.65 1.832 3.7-4.789a.75.75 0 0 1 1.052-.134Z" clip-rule="evenodd" /> </svg>
-          Book Listed
-        </button>
+        <button>Book Listed</button>
       )
     } else {
       return (
-        <button onClick={() => { handleAddBooking(element) }} class="mt-5 py-2 px-4 inline-flex items-center gap-x-2 text-sm text-blue-900 hover:bg-blue-900 hover:text-white font-semibold rounded-lg border-2  border-slate-600 bg-blue-300 text-white  disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4"> <path fillRule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm.75-10.25v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5a.75.75 0 0 1 1.5 0Z" clipRule="evenodd" /> </svg>
-          Add to Book List
-        </button>
+        <button onClick={() => { handleAddBooking(element) }}>Add to BookList</button>
       )
     }
   }
@@ -117,12 +111,6 @@ function SearchTrain() {
     await updateDoc(userBookList, { bookings: arrayUnion(newFields) });
     alert("Ticket Added")
   }
-  const dayExist=(element,day)=>{
-    if(element.run_days.includes(day)){
-      return "mr-5";
-    }else{return "mr-5 opacity-60";}
-    
-  }
   return (
     <div>
 
@@ -138,14 +126,15 @@ function SearchTrain() {
           {
             data.from && results_from.slice(0, 2).map((user) => {
               return (
-                <div className="w-1/4 m-auto bg-gray-300 mt-2 rounded-xl cursor-pointer text-left pl-5 py-2" onClick={() => { handleClick("from", user.code) }}>
-                  <h4>{user.station} - {user.code}</h4><h4>{user.state}</h4>
+                <div className="stationCodes" onClick={() => { handleClick("from", user.code) }}>
+                  <h4>{user.code}</h4>
+                  <h4>{user.state}</h4>
                 </div>
               )
             })
           }
           <div class="w-12 h-7 m-auto mt-7 mb-1 bg-blue-900 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-7 h-7 m-auto bg-gray-100 cl-white rounded-xl"> <path fill-rule="evenodd" d="M13.78 10.47a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 0 1-1.06 0l-2.25-2.25a.75.75 0 1 1 1.06-1.06l.97.97V5.75a.75.75 0 0 1 1.5 0v5.69l.97-.97a.75.75 0 0 1 1.06 0ZM2.22 5.53a.75.75 0 0 1 0-1.06l2.25-2.25a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1-1.06 1.06l-.97-.97v5.69a.75.75 0 0 1-1.5 0V4.56l-.97.97a.75.75 0 0 1-1.06 0Z" clip-rule="evenodd" /> </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-7 h-7 m-auto bg-gray-100 cl-white rounded-xl"> <path fill-rule="evenodd" d="M13.78 10.47a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 0 1-1.06 0l-2.25-2.25a.75.75 0 1 1 1.06-1.06l.97.97V5.75a.75.75 0 0 1 1.5 0v5.69l.97-.97a.75.75 0 0 1 1.06 0ZM2.22 5.53a.75.75 0 0 1 0-1.06l2.25-2.25a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1-1.06 1.06l-.97-.97v5.69a.75.75 0 0 1-1.5 0V4.56l-.97.97a.75.75 0 0 1-1.06 0Z" clip-rule="evenodd" /> </svg>
           </div>
           {/* <input placeholder='to' name='to' onChange={handleChange} value={data.to} /> */}
           <div class="w-1/4 m-auto">
@@ -155,8 +144,9 @@ function SearchTrain() {
           {
             data.to && results_to.slice(0, 2).map((user) => {
               return (
-                <div className="w-1/4 m-auto bg-gray-300 mt-2 rounded-xl cursor-pointer text-left pl-5 py-2" onClick={() => { handleClick("to", user.code) }}>
-                  <h4>{user.station} - {user.code}</h4><h4>{user.state}</h4>
+                <div className="stationCodes" onClick={() => { handleClick("to", user.code) }}>
+                  <h4>{user.code}</h4>
+                  <h4>{user.state}</h4>
                 </div>
               )
             })
@@ -167,42 +157,26 @@ function SearchTrain() {
           </div>
           {/* <input type="date" name='date' onChange={handleChange} value={data.date} /> */}
           <button type="submit" class="mt-5 py-2 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-5 h-5"> <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" /> </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-5 h-5"> <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" /> </svg> 
             Search
           </button>
           {/* <button type='submit'>Search</button> */}
-
+          
         </form>
         {
           searchResults.map((element) => {
             return (
-              <div className="w-3/4 py-4 px-4 bg-blue-300 m-auto mt-4 text-sm font-medium text-slate-800 rounded-3xl">
-                <div className='text-black text-lg'>{element.train_name}</div>
-                
-                <div className='mt-3'>Runs on:</div>
-                <div className='flex justify-center font-bold mt-1'>
-                  <div className={dayExist(element,'Mon')}>M</div>
-                  <div className={dayExist(element,'Wed')}>T</div>
-                  <div className={dayExist(element,'Tue')}>W</div>
-                  <div className={dayExist(element,'Thu')}>T</div>
-                  <div className={dayExist(element,'Fri')}>F</div>
-                  <div className={dayExist(element,'Sat')}>S</div>
-                  <div className={dayExist(element,'Sun')}>S</div>
-                </div>
-                <div className='mt-5 relative border-1 h-5'>
-                  <div className='absolute'>From : {element.from_station_name}</div>
-                  <div className='absolute right-0'>To: {element.to_station_name}</div>
-                </div>
-                <div className='mt-5 relative border-1 h-5'>
-                  <div className='absolute'>Date : {element.train_date}</div>
-                  <div className='absolute right-0'>Train Number: {element.train_number}</div>
-                </div>
+              <div className="stationCodes">
+                <h4>{element.train_number}</h4>
+                <h4>{element.from_station_name}</h4>
+                <h4>{element.to_station_name}</h4>
+                <h4>{element.train_date}</h4>
                 {renderIfinBookList(element)}
               </div>
             )
           })
         }
-      </div><div class="mt-32"></div>
+      </div>
     </div>
   )
 }

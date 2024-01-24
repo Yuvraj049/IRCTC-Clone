@@ -7,9 +7,11 @@
         "train_number": "22221",
         "train_name": "MUMBAI CSMT - HAZRAT NIZAMUDDIN Rajdhani Express",
         "run_days": [
+          "Mon",
           "Tue",
           "Wed",
           "Thu",
+          "Fri",
           "Sat",
           "Sun"
         ],
