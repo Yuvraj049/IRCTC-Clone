@@ -1,28 +1,43 @@
 import { React, useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { auth, db, storage } from "../firebase-config"
 import { onAuthStateChanged, updateProfile, signOut, deleteUser } from "firebase/auth";
 import { updateDoc, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import Radiobuttons from '../components/Radiobuttons'
 import Navbar from '../components/Navbar';
+import Alert from '../components/Alert';
+import DialogBox from '../components/DialogBox';
 
 function UserProfile() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [data, setData] = useState({ name: "", email: "", phone: "", dob: "", gender: "" });
   const [user, setUser] = useState(null);
-  if (user) {
-    console.log(user.photoURL);
+  const [showModal,setShowModal] = useState(false);
+  const [alert, setAlert] = useState(null);
+  const showAlert = (message, type) => {
+    setAlert({
+      msg: message,
+      type: type
+    })
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
   }
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
-      console.log(user);
       if (!currentUser) {
         navigate("/");
       }
       setUser(currentUser);
     })
-  }, [])
+    if(location.state){
+      showAlert(location.state.msg,location.state.type);
+      navigate("/profile");
+    }
+  }, []);
+
   useEffect(() => {
     const setUserData = async () => {
       const userDoc = doc(db, "users", user.uid);
@@ -39,6 +54,7 @@ function UserProfile() {
     const value = e.target.value;
     setData({ ...data, [name]: value });
   }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const userDoc = doc(db, "users", user.uid);
@@ -46,7 +62,8 @@ function UserProfile() {
     const newFields = { name: data.name, phone: Number(data.phone), dob: data.dob, gender: data.gender, state: data.state };
     console.log(newFields);
     updateDoc(userDoc, newFields);
-    alert("Profile Updated");
+    window.scrollTo({top:0});
+    showAlert("Profile Updated",'success');
   }
   const [photo, setPhoto] = useState(null)
   const url = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
@@ -61,20 +78,21 @@ function UserProfile() {
     await uploadBytes(fileRef, photo)
     const photoURL = await getDownloadURL(fileRef);
     updateProfile(user, { photoURL: photoURL })
-    alert("Profile Photo Updated");
+    showAlert("Profile Photo Updated","success");
     window.location.reload();
   }
   const logOut = () => {
     signOut(auth).then(() => {
-      navigate("/");
+      navigate('/',{state:{msg:"Logged Out SuccessFully",type:"success"}});
+      window.scrollTo({top:0});
     });
     console.log(`${user.email} logged out`);
   }
   const deleteAccount = () => {
-    if (window.confirm("Do you really want to delete your account?")) {
-      deleteUser(user).then(() => {
-        console.log(`deleted ${user.email}`);
-      }).catch((error) => {
+    deleteUser(user).then(() => {
+      navigate('/',{state:{msg:"Account Deleted SuccessFully",type:"success"}});
+      console.log(`deleted ${user.email}`);
+    }).catch((error) => {
         alert("Requires Recent Login!")
         console.log(error);
         return;
@@ -86,12 +104,9 @@ function UserProfile() {
 
       const desertRef = ref(storage, `${user.uid}.png`);
       deleteObject(desertRef).then(() => {
-        navigate("/");
-        console.log("first")
       }).catch((error) => {
         console.log(error.message);
       });
-    }
   }
   return (
     <div>
@@ -109,7 +124,9 @@ function UserProfile() {
       <button onClick={logOut}>LogOut</button>
       <button onClick={deleteAccount}>Delete Account</button> */}
 
-      <Navbar navbar={[["Home", "/"], ["SearchTrain", "/searchtrain"], ["BookList", "/booklist"], ["AboutUs", "/#aboutUs"]]} />
+      <Alert alert={alert}/>
+      {showModal && <DialogBox setShowModal={setShowModal} action={deleteAccount} msg={"Are you sure you want to delete your Account?"}/>}
+      <Navbar navbar={[["Home", "/"], ["Search Train", "/searchtrain"], ["Book List", "/booklist"], ["About Us", "/#aboutUs"]]} />
       <h1 class="mt-5 text-3xl font-bold">User Profile</h1>
       <div class=" relative grid grid-cols-2 max-w-7xl">
         <div class="flex mt-20 h-screen justify-center w-2/5 absolute left-20">
@@ -124,12 +141,12 @@ function UserProfile() {
                 </div>
                 <table class="flex text-xs my-3 justify-center">
                   <tbody><tr>
-                    <td class="px-2 py-2 text-sm text-gray-500 font-semibold">Email:</td>
-                    <td class="px-2 py-2 text-sm">{user?.email}</td>
+                    <td class="px-2 py-2 text-base text-gray-500 font-bold">Email:</td>
+                    <td class="px-2 py-2 text-base">{user?.email}</td>
                   </tr>
                     <tr>
-                      <td class="px-2 py-2 text-sm text-gray-500 font-semibold">Phone:</td>
-                      <td class="px-2 py-2 text-sm">{data.phone}</td>
+                      <td class="px-2 py-2 text-base text-gray-500 font-bold">Phone:</td>
+                      <td class="px-2 py-2 text-base">{data.phone}</td>
                     </tr>
                   </tbody></table>
               </div>
@@ -150,11 +167,9 @@ function UserProfile() {
               </button>
             </div>
             <button onClick={logOut} type="button" class="w-1/2 mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Log Out</button>
-            <button onClick={deleteAccount} type="button" class="w-1/2 mt-3 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Delete Account</button>
+            <button onClick={()=>{setShowModal(true)}} type="button" class="w-1/2 mt-3 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Delete Account</button>
           </div>
         </div>
-
-
 
         <div class="flex items-center justify-center p-12 absolute right-0">
           <div class="mx-auto w-full max-w-[550px] bg-white">

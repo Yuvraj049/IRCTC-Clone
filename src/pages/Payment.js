@@ -27,8 +27,7 @@ function Payment() {
         const mapIndex = list.bookings.findIndex((map) => (map.from === element.from && map.to === element.to && map.date === element.date));
         list.bookings[mapIndex].booked = true;
         await updateDoc(userBookList, list);
-        alert(`Ticket Booked`);
-        navigate("/booklist");
+        navigate('/booklist',{state:{msg:"Ticket Added",type:"success"}});
     }
     return (
         <div>

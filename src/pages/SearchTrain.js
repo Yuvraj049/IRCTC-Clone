@@ -6,8 +6,19 @@ import { updateDoc, doc, getDoc, arrayUnion } from "firebase/firestore";
 import records from '../records.json';
 import stations from '../stations.json';
 import Navbar from '../components/Navbar';
+import Alert from '../components/Alert';
 
 function SearchTrain() {
+  const [alert, setAlert] = useState(null);
+    const showAlert = (message, type) => {
+      setAlert({
+        msg: message,
+        type: type
+      })
+      setTimeout(() => {
+        setAlert(null);
+      }, 3000);
+    }
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -17,6 +28,7 @@ function SearchTrain() {
       }
       setUser(currentUser);
     })
+    
   }, [])
   useEffect(() => {
     const setList = async () => {
@@ -115,17 +127,16 @@ function SearchTrain() {
     };
     console.log(newFields);
     await updateDoc(userBookList, { bookings: arrayUnion(newFields) });
-    alert("Ticket Added")
+    window.scrollTo({top:0});
+    showAlert("Train Book Listed","success");
   }
   const dayExist=(element,day)=>{
-    if(element.run_days.includes(day)){
-      return "mr-5";
+    if(element.run_days.includes(day)){return "mr-5";
     }else{return "mr-5 opacity-60";}
-    
   }
   return (
     <div>
-
+      <Alert alert={alert}/>
       <Navbar navbar={[["Home", "/"], ["Book List", "/booklist"], ["About Us", "/#aboutUs"]]} />
       <h1 class="mt-5 text-3xl font-bold mb-20">Search your Journey</h1>
       <div>
