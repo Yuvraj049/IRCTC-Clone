@@ -5,6 +5,7 @@ import { auth, db } from "../firebase-config";
 import { doc, setDoc } from "firebase/firestore";
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
+import Alert from '../components/Alert';
 
 function Signup() {
   const user = auth.currentUser;
@@ -26,16 +27,26 @@ function Signup() {
       const result = await createUserWithEmailAndPassword(auth, data.email, data.password)
       await setDoc(doc(db, "users", result.user.uid), { email: data.email, password: data.password });
       await setDoc(doc(db, "booklist", result.user.uid), {});
-      navigate('/searchtrain')
+      navigate('/profile',{state:{msg:"Registered Successfully",type:"success"}});
     } catch (error) {
       setData({ email: "", password: "" });
-      if (error.code === 'auth/email-already-in-use') { alert('Email already in use'); }
-      else if (error.code === 'auth/invalid-email') { alert('Invalid E-mail!'); }
-      else if (error.code === 'auth/weak-password') { alert('Password should be at least 6 characters!'); }
-      else if (error.code === 'auth/network-request-failed') { alert('Without Network Connection!'); }
+      if (error.code === 'auth/email-already-in-use') { showAlert('Email Already in Use!',"danger"); }
+      else if (error.code === 'auth/invalid-email') { showAlert('Invalid E-mail!',"danger"); }
+      else if (error.code === 'auth/weak-password') { showAlert('Password should be at least 6 characters!','warning'); }
+      else if (error.code === 'auth/network-request-failed') { showAlert('No Network Connection!','danger'); }
       console.log(error.message);
     }
   };
+  const [alert, setAlert] = useState(null);
+    const showAlert = (message, type) => {
+        setAlert({
+            msg: message,
+            type: type
+        })
+        setTimeout(() => {
+            setAlert(null);
+        }, 3000);
+  }
   return (
     <div>
       {/* <form onSubmit={registerUser}> */}
@@ -45,7 +56,7 @@ function Signup() {
       {/* </form> */}
 
 
-
+      <Alert alert={alert}/>
       <Navbar navbar={[["Home","/"],["Login","/login"],["AboutUs","/#aboutUs"]]}/>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -59,7 +70,7 @@ function Signup() {
               <label for="email" className="block text-sm font-medium leading-6 text-gray-900">Email address</label>
             </div>
               <div className="mt-2">
-                <input name='email' onChange={handleChange} value={data.email} required className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                <input name='email' onChange={handleChange} value={data.email} required className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
               </div>
             </div>
 
@@ -68,7 +79,7 @@ function Signup() {
                 <label for="password" className="block text-sm font-medium leading-6 text-gray-900">Password</label>
               </div>
               <div className="mt-2">
-              <input type="password" name='password' onChange={handleChange} value={data.password} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+              <input type="password" name='password' onChange={handleChange} value={data.password} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
               </div>
             </div>
 

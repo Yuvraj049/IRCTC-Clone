@@ -1,15 +1,30 @@
 import { React, useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate,useLocation } from 'react-router-dom'
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase-config";
 import { updateDoc, doc, getDoc, arrayRemove } from "firebase/firestore";
 import Navbar from '../components/Navbar';
 import { Accordion, AccordionContent, AccordionPanel, AccordionTitle } from 'flowbite-react';
+import Alert from "../components/Alert"
+import DialogBox from '../components/DialogBox';
 
 function BookList() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
+  const [showModal,setShowModal] = useState(false);
   const [booklist, setBooklist] = useState([]);
+  const [element1,setElement] = useState(null);
+  const [alert, setAlert] = useState(null);
+  const showAlert = (message, type) => {
+    setAlert({
+        msg: message,
+        type: type
+    })
+    setTimeout(() => {
+        setAlert(null);
+    }, 3000);
+  }
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
       if (!currentUser) {
@@ -29,8 +44,8 @@ function BookList() {
       setList();
     };
   }, [user])
-
   const handleCancel = async (element) => {
+    navigate("/booklist");
     const userBookList = doc(db, "booklist", user.uid);
     console.log(user);
     console.log(userBookList);
@@ -39,10 +54,9 @@ function BookList() {
     const mapIndex = list.bookings.findIndex((map) => (map.from === element.from && map.to === element.to && map.date === element.date));
     console.log(mapIndex);
     await updateDoc(userBookList, { bookings: arrayRemove(list.bookings[mapIndex]) });
-    console.log(`ticket cancelled`);
     window.location.reload();
+    console.log(`ticket cancelled`);
   }
-
 
   return (
     <div>
@@ -61,9 +75,10 @@ function BookList() {
         </div>
       )
     })} */}
-
+      <Alert alert={alert}/>
+      {showModal && <DialogBox setShowModal={setShowModal} element={element1} action={handleCancel} msg={"Are you sure you want to cancel the Ticket?"}/>}
       <Navbar navbar={[["Home", "/"], ["Search Train", "/searchtrain"], ["About Us", "/#aboutUs"]]} />
-      <h1 class="mt-5 mb-10 text-3xl font-bold">BookList</h1>
+      <h1 class="mt-5 mb-10 text-3xl font-bold">Book List</h1>
       {booklist && booklist.map(element => {
         return (
           <div>
@@ -85,8 +100,8 @@ function BookList() {
                       TRAIN NUMBER : {element.train_number}
                     </button>
                     {(() => {
-                      if (!element.booked) { return <button onClick={() => { navigate("/payment", { state: element }) }} class="absolute right-14 text-white bg-purple-600 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">BOOK NOW</button>; }
-                      else { return <button class="absolute right-14 text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-700 dark:hover:bg-green-700 dark:focus:ring-green-800">BOOKED</button> }
+                      if (!element.booked) { return <button onClick={() => { navigate("/payment", { state: element }) }} class="absolute right-16 text-white bg-purple-600 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-4 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">BOOK NOW</button>; }
+                      else { return <button class="absolute right-16 text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-700 dark:hover:bg-green-700 dark:focus:ring-green-800">BOOKED</button> }
                     })()}
                   </AccordionTitle>
                   <AccordionContent>
@@ -106,12 +121,10 @@ function BookList() {
                         <div class="mt-1 mb-5 flex">: {element.train_type}</div>
                       </div>
                     </div>
-                    <button onClick={() => { handleCancel(element) }} class="mt-5 inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md">
+                    <button onClick={() => {setElement(element);setShowModal(true)}} class="mt-5 inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /> </svg>
                     Cancel Ticket
                     </button>
-                    {/* <button onClick={() => { handleCancel(element) }}>CANCEL TICKET</button> */}
-
                   </AccordionContent>
                 </AccordionPanel>
               </Accordion>
@@ -119,8 +132,6 @@ function BookList() {
           </div>
         )
       })}
-
-
     </div>
   )
 }
