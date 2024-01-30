@@ -4,7 +4,6 @@ import { auth } from "../firebase-config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import Navbar from '../components/Navbar';
 import Alert from '../components/Alert';
-// import Alert from '../components/Alert';
 
 function Login() {
   const user = auth.currentUser;

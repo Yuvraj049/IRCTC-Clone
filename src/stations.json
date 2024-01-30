@@ -286,7 +286,7 @@
             "state": "Rajasthan"
         },
         {
-            "station": "BANdra (T)",
+            "station": "MUMBAI (BANDRA)",
             "code": "Bdts",
             "state": "Maharashtra"
         },
@@ -631,7 +631,7 @@
             "state": "West Bengal"
         },
         {
-            "station": "BORIVALI",
+            "station": "MUMBAI (BORIVALI)",
             "code": "BVI",
             "state": "Maharashtra"
         },
@@ -786,7 +786,7 @@
             "state": "Maharashtra"
         },
         {
-            "station": "DADAR",
+            "station": "MUMBAI (DADAR)",
             "code": "DR",
             "state": "Maharashtra"
         },
@@ -2747,6 +2747,11 @@
         },
         {
             "station": "VADODARA",
+            "code": "BRC",
+            "state": "Gujarat"
+        },
+        {
+            "station": "BARODA",
             "code": "BRC",
             "state": "Gujarat"
         },

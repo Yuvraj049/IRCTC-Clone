@@ -21,7 +21,7 @@ function Home() {
     })
     setTimeout(() => {
       setAlert(null);
-    }, 3000);
+    }, 2000);
   } 
   useEffect(()=>{
     onAuthStateChanged(auth,(currentUser)=>{
