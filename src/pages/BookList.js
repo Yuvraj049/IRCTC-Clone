@@ -38,7 +38,7 @@ function BookList() {
       const userBookList = doc(db, "booklist", user.uid);
       const listSnapshot = await getDoc(userBookList);
       const list = listSnapshot.data();
-      setBooklist(list.bookings);
+      if(list.bookings) setBooklist(list.bookings);
     }
     if (user) {
       setList();
@@ -59,21 +59,6 @@ function BookList() {
   }
   return (
     <div>
-      {/*
-        { booklist && booklist.map(element=>{
-      return(
-        <div>
-          <div>
-          <strong>{element.booked?'true':'false'} {element.train_date} {element.from} {element.to}</strong> 
-          {(()=>{
-            if(!element.booked){return <button onClick={()=>{navigate("/payment",{state:element})}}>pay</button>;}
-            else{return <button>paid</button>}
-          })()}
-          <button onClick={()=>{handleCancel(element)}}>cancel</button>
-        </div><br />
-        </div>
-      )
-    })} */}
       <Alert alert={alert}/>
       {showModal && <DialogBox setShowModal={setShowModal} element={element1} action={handleCancel} msg={"Are you sure you want to cancel the Ticket?"}/>}
       <Navbar navbar={[["Home", "/"], ["Search Train", "/searchtrain"], ["About Us", "/#aboutUs"]]} />
@@ -82,7 +67,6 @@ function BookList() {
         return (
           <div>
             <div>
-              {/* <strong>{element.booked?'true':'false'} {element.train_date} {element.from} {element.to}</strong>  */}
               <Accordion class="w-3/4 m-auto relative border-2" >
                 <AccordionPanel>
                   <AccordionTitle>

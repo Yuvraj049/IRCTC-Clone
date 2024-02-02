@@ -20,7 +20,7 @@ function Signup() {
     e.preventDefault();
     if (user) {
       navigate("/profile");
-      alert("First Log Out from your account");
+      window.alert("First Log Out from your account");
       return;
     }
     try {
