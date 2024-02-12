@@ -12,6 +12,9 @@ import DialogBox from '../components/DialogBox';
 function UserProfile() {
   const navigate = useNavigate();
   const location = useLocation();
+  //  for DOB
+  const today = new Date().toISOString().split('T')[0];
+
   const [data, setData] = useState({ name: "", email: "", phone: "", dob: "", gender: "" });
   const [user, setUser] = useState(null);
   const [showModal,setShowModal] = useState(false);
@@ -208,7 +211,7 @@ function UserProfile() {
                     <label for="date" class="mb-3 block text-base font-medium text-[#07074D]">
                       Date
                     </label>
-                    <input type="date" name="dob" onChange={handleChange} value={data.dob} required
+                    <input type="date" name="dob" onChange={handleChange} min={today} value={data.dob} required
                       class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                   </div>
                 </div>

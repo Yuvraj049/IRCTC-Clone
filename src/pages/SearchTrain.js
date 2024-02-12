@@ -10,6 +10,7 @@ import Alert from '../components/Alert';
 
 function SearchTrain() {
   const [alert, setAlert] = useState(null);
+  const today = new Date().toISOString().split('T')[0];
   const showAlert = (message, type) => {
     setAlert({
       msg: message,
@@ -137,11 +138,9 @@ function SearchTrain() {
     }
   }
   const isMatched = (element) => {
-    console.log(element);
     if (booklist) {
       return booklist.some((element1) => {
-        console.log(element1);
-        return (element1.from === element.from && element1.to === element.to && element.train_date === element1.train_date)
+        return (element1.from === element.from && element1.to === element.to && element.train_date === element1.train_date && element.train_number === element1.train_number)
       })
     }
   }
@@ -199,7 +198,7 @@ function SearchTrain() {
           }
           <div class="w-1/6 m-auto mt-10">
             <label for="date" class="flex mb-1 text-xl font-medium text-slate-700"> Date: </label>
-            <input type="date" name='date' onChange={handleChange} value={data.date} min="2024-01-29" required class="w-full rounded-md border-2 border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+            <input type="date" name='date' onChange={handleChange} value={data.date} min={today} required class="w-full rounded-md border-2 border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
           </div>
           <button type="submit" class="mt-5 py-2 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-5 h-5"> <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" /> </svg>
