@@ -65,18 +65,28 @@ function UserProfile() {
     const newFields = { name: data.name, phone: Number(data.phone), dob: data.dob, gender: data.gender, state: data.state };
     console.log(newFields);
     updateDoc(userDoc, newFields);
-    window.scrollTo({top:0});
+    window.scrollTo({top:0,behavior:"smooth"});
     showAlert("Profile Updated",'success');
   }
   const [photo, setPhoto] = useState(null)
   const url = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
 
   const handleFileChange = (e) => {
-    if (e.target.files[0]) {
-      setPhoto(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setPhoto(file);
+    } else {
+      e.target.value = "";
+      window.scrollTo({top:0,behavior:"smooth"});
+      showAlert("Please upload the right extension format.", "danger");
     }
   }
   const handleUpload = async () => {
+    if (!photo) {
+      window.scrollTo({top:0,behavior:"smooth"});
+      showAlert("Please upload an Image", "danger");
+      return;
+    }
     const fileRef = ref(storage, user.uid + ".png");
     console.log(fileRef);
     await uploadBytes(fileRef, photo)
@@ -85,6 +95,7 @@ function UserProfile() {
     window.scrollTo({top:0,behavior:"smooth"});
     showAlert("Profile Photo Updated","success");
   }
+  
   const logOut = () => {
     signOut(auth).then(() => {
       navigate('/',{state:{msg:"Logged Out SuccessFully",type:"success"}});
@@ -92,42 +103,33 @@ function UserProfile() {
     });
     console.log(`${user.email} logged out`);
   }
+
   const deleteAccount = () => {
-    deleteUser(user).then(() => {
-      navigate('/',{state:{msg:"Account Deleted SuccessFully",type:"success"}});
-      console.log(`deleted ${user.email}`);
-    }).catch((error) => {
-        alert("Requires Recent Login!")
-        console.log(error);
-        return;
-      });
       const userDoc = doc(db, "users", user.uid);
       const userBookList = doc(db, "booklist", user.uid);
+      const desertRef = ref(storage, `${user.uid}.png`);
+
+      console.log(userDoc);
+      console.log(userBookList);
+
       deleteDoc(userDoc);
       deleteDoc(userBookList);
-
-      const desertRef = ref(storage, `${user.uid}.png`);
       deleteObject(desertRef).then(() => {
       }).catch((error) => {
         console.log(error.message);
       });
-  }
+
+      deleteUser(user).then(() => {
+        navigate('/',{state:{msg:"Account Deleted SuccessFully",type:"success"}});
+        console.log(`deleted ${user.email}`);
+      }).catch((error) => {
+          window.alert("Requires Recent Login!")
+          console.log(error);
+          return;
+      });
+    }
   return (
     <div>
-      {/* <form onSubmit={handleSubmit}>
-        <input type="text" name="name" placeholder='name' onChange={handleChange} value={data.name} required/>
-        <input type="email" placeholder='email' defaultValue={user?.email} readOnly/>
-        <input type="number" name="phone" placeholder='phone number' onChange={handleChange} value={data.phone} required/>
-        <input type="date" name="dob"  onChange={handleChange} value={data.dob} required/>
-        <Radiobuttons handleChange={handleChange} data={data}/>
-        <button type='submit'>Update</button><br />
-      </form>
-      <input type="file" placeholder='image' onChange={handleFileChange}/>
-      <button onClick={handleUpload}>Upload</button>
-      <img src={user && user.photoURL?user.photoURL:url} alt="Avatar" className='avatar'/><br /><br /><br /><br />
-      <button onClick={logOut}>LogOut</button>
-      <button onClick={deleteAccount}>Delete Account</button> */}
-
       <Alert alert={alert}/>
       {showModal && <DialogBox setShowModal={setShowModal} action={deleteAccount} msg={"Are you sure you want to delete your Account?"}/>}
       <Navbar navbar={[["Home", "/"], ["Search Train", "/searchtrain"], ["Book List", "/booklist"], ["About Us", "/#aboutUs"]]} />
@@ -140,7 +142,7 @@ function UserProfile() {
                 <img class="w-32 h-32 rounded-full mx-auto" src={user && user.photoURL ? user.photoURL : url} />
               </div>
               <div class="p-2">
-                <h3 class="text-center text-2xl text-gray-900 font-medium leading-8">{data.name}</h3>
+                <h3 class="text-center text-2xl text-gray-900 font-medium leading-8">{data?.name}</h3>
                 <div class="text-center text-gray-400 text-xs font-semibold">
                 </div>
                 <table class="flex text-xs my-3 justify-center">
@@ -150,12 +152,12 @@ function UserProfile() {
                   </tr>
                     <tr>
                       <td class="px-2 py-2 text-base text-gray-500 font-bold">Phone:</td>
-                      <td class="px-2 py-2 text-base">{data.phone}</td>
+                      <td class="px-2 py-2 text-base">{data?.phone}</td>
                     </tr>
                   </tbody></table>
               </div>
             </div>
-            <input onChange={handleFileChange} class="mt-3 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"></input>
+            <input onChange={handleFileChange}  class="mt-3 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"></input>
             <div class="w-3/5 relative mt-3 m-auto">
               <button onClick={handleUpload} class="mt-2 cursor-pointer flex items-center gap-4 py-1 pl-4 before:border-gray-900/60 hover:before:border-gray-300 
                 group dark:before:bg-darker dark:hover:before:border-gray-900 before:bg-gray-300 dark:before:border-gray-600 before:absolute before:inset-0 before:rounded-3xl
@@ -182,14 +184,14 @@ function UserProfile() {
                 <label for="name" class="mb-3 block text-base font-medium text-[#07074D]">
                   Full Name
                 </label>
-                <input type="text" name="name" placeholder='Enter Name' onChange={handleChange} value={data.name} required
+                <input type="text" name="name" placeholder='Enter Name' onChange={handleChange} value={data?.name} required
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
               </div>
               <div class="mb-5">
                 <label for="phone" class="mb-3 block text-base font-medium text-[#07074D]">
                   Phone Number
                 </label>
-                <input type="number" name="phone" placeholder='Enter Phone Number' onChange={handleChange} value={data.phone} required
+                <input type="number" name="phone" placeholder='Enter Phone Number' onChange={handleChange} value={data?.phone} required
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
               </div>
               <div class="mb-5">
@@ -211,7 +213,7 @@ function UserProfile() {
                     <label for="date" class="mb-3 block text-base font-medium text-[#07074D]">
                       Date
                     </label>
-                    <input type="date" name="dob" onChange={handleChange} min={today} value={data.dob} required
+                    <input type="date" name="dob" onChange={handleChange} min={today} value={data?.dob} required
                       class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                   </div>
                 </div>
@@ -220,7 +222,7 @@ function UserProfile() {
                     <label for="time" class="mb-3 block text-base font-medium text-[#07074D]">
                       State
                     </label>
-                    <input type="text" name="state" placeholder='Enter your State' onChange={handleChange} value={data.state} required
+                    <input type="text" name="state" placeholder='Enter your State' onChange={handleChange} value={data?.state} required
                       class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                   </div>
                 </div>

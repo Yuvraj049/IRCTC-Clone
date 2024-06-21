@@ -1,4 +1,4 @@
-import { React, useState,useEffect } from 'react'
+import { React, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { auth } from "../firebase-config";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -26,9 +26,26 @@ function Login() {
   }
   const loginUser = async (e) => {
     e.preventDefault();
+    e.preventDefault();
+    const passwordInput = document.getElementById('password');
+    const passwordValue = passwordInput.value;
+    let validityMessage = "";
+    if (/\s/.test(passwordValue)) {
+      validityMessage = "Password must not contain spaces";
+    }
+    else if (passwordValue.length < 6) {
+      validityMessage = "Password must contain at least 6 characters";
+    }
+    if(validityMessage!==""){
+      showAlert(validityMessage,"danger");
+      setData({password: "" });
+      return;
+    }
+
+
     if (user) {
       navigate("/profile");
-      alert("First Log Out from your account");
+      window.alert("First Log Out from your account");
       return;
     }
     try{
@@ -36,22 +53,14 @@ function Login() {
       navigate('/profile',{state:{msg:"Logged Successfully",type:"success"}});
     } catch (error) {
       setData({ email: "", password: "" });
-      if (error.code === 'auth/invalid-credential') { showAlert('Invalid Credentials!',"danger"); }
-      else if (error.code === 'auth/invalid-email') { showAlert('Invalid Email!',"danger"); }
+      if (error.code === 'auth/invalid-email') { showAlert('Invalid Email!',"danger"); }
+      else if (error.code === 'auth/invalid-credential') { showAlert('Invalid Credentials!',"danger"); }
       else if (error.code === 'auth/network-request-failed') { showAlert('Network Request Failed!',"danger"); }
       console.log(error.message);
     }
   };
   return (
     <div>
-      {/* <Link to={"/"}>Home</Link><br />
-      <Link to={"/signup"}>SignUp</Link><br />
-      <Link to={"/#aboutUs"}>About Us</Link>
-      <form onSubmit={loginUser}>
-      <input name='email' placeholder='email' onChange={handleChange} value={data.email}/>
-      <input name='password' placeholder='password' onChange={handleChange} value={data.password}/>
-      <button type='submit'>LogIn</button>
-      </form> */}
       <Alert alert={alert}/>
       <Navbar navbar={[["Home","/"],["Register","/signup"],["AboutUs","/#aboutUs"]]}/>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -66,19 +75,16 @@ function Login() {
                 <label for="email" className="block text-sm font-medium leading-6 text-gray-900">Email address</label>
               </div>
               <div className="mt-2">
-                <input name='email' onChange={handleChange} value={data.email} required className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                <input name='email' onChange={handleChange} value={data.email} required className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between">
                 <label for="password" className="block text-sm font-medium leading-6 text-gray-900">Password</label>
-                {/* <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
-                </div> */}
               </div>
               <div className="mt-2">
-                <input type="password" name='password' onChange={handleChange} value={data.password} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                <input type="password" id='password' name='password' onChange={handleChange} value={data.password}  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
               </div>
             </div>
 
