@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase-config";
 import { updateDoc, doc, getDoc, arrayUnion } from "firebase/firestore";
-import records from '../records.json';
 import stations from '../stations.json';
 import Navbar from '../components/Navbar';
 import Alert from '../components/Alert';
@@ -92,12 +91,14 @@ function SearchTrain() {
       const response = await fetch(url, options);
       const result = await response.json();
       console.log(result);
-      if (result.data.length==0) {
+      if (result.data.length===0) {
         setData({ from: "", to: "", date: "" });
         showAlert("Search Results Not Found", "danger");
       }
       setSearchResults(result.data);
     } catch (error) {
+      setData({ from: "", to: "", date: "" });
+      showAlert("Some Error occurred", "danger");
       console.error(error);
     }
     // console.log(data);

@@ -4,7 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase-config";
 import { updateDoc, doc, getDoc, arrayRemove } from "firebase/firestore";
 import Navbar from '../components/Navbar';
-import { Accordion, AccordionContent, AccordionPanel, AccordionTitle } from 'flowbite-react';
+import { Accordion, AccordionContent, AccordionPanel, AccordionTitle, ListGroup } from 'flowbite-react';
 import Alert from "../components/Alert"
 import DialogBox from '../components/DialogBox';
 
@@ -13,7 +13,7 @@ function BookList() {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [showModal,setShowModal] = useState(false);
-  const [booklist, setBooklist] = useState([]);
+  const [booklist, setBooklist] = useState([1]);
   const [element1,setElement] = useState(null);
   const [alert, setAlert] = useState(null);
   const showAlert = (message, type) => {
@@ -45,17 +45,14 @@ function BookList() {
     };
   }, [user])
   const handleCancel = async (element) => {
-    navigate("/booklist");
     const userBookList = doc(db, "booklist", user.uid);
-    console.log(user);
-    console.log(userBookList);
     const listSnapshot = await getDoc(userBookList);
     const list = listSnapshot.data();
     const mapIndex = list.bookings.findIndex((map) => (map.from === element.from && map.to === element.to && map.date === element.date));
     console.log(mapIndex);
     await updateDoc(userBookList, { bookings: arrayRemove(list.bookings[mapIndex]) });
     window.location.reload();
-    console.log(`ticket cancelled`);
+    window.alert("Ticket Cancelled Successfully");
   }
   return (
     <div>
