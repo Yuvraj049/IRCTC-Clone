@@ -37,6 +37,7 @@ Feature includes - User Registration and Authentication, Train Search and Bookin
 ## Running the Application 🚀
 
 1. **Start the Development Server**
+   
    ```bash
    npm start
    ```
