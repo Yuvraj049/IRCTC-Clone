@@ -4,7 +4,7 @@
 
 ## Description 
 
-IRCTC Clone is a comprehensive train ticket booking application inspired by the official Indian Railway Catering and Tourism Corporation (IRCTC) platform. This app is designed to offer a seamless and user-friendly experience for booking train tickets, checking train schedules, and managing travel plans. With a clean and intuitive interface, IRCTC Clone aims to make railway travel planning effortless and efficient.
+IRCTC Clone is a comprehensive train ticket booking application inspired by the official Indian Railway Catering and Tourism Corporation (IRCTC) platform. This app is designed to offer a seamless and user-friendly experience for booking train tickets, checking train schedules (using RapidAPI's IRCTC API), and managing travel plans. With a clean and intuitive interface, IRCTC Clone aims to make railway travel planning effortless and efficient.
 
 Feature includes - User Registration and Authentication, Train Search and Booking, User Dashboard, Ticket Payment and Cancellation
 
@@ -19,7 +19,6 @@ Feature includes - User Registration and Authentication, Train Search and Bookin
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?&style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?&style=for-the-badge&logo=css3&logoColor=white)
 ![Git](https://img.shields.io/badge/git-%23F05033.svg?&style=for-the-badge&logo=git&logoColor=white)
-![GitHub](https://img.shields.io/badge/github-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white)
 
 
 ## Getting Started 🔥
