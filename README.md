@@ -25,7 +25,7 @@ Feature includes - User Registration and Authentication, Train Search and Bookin
 
 1. **Clone the Repository**
    ```bash
-   https://github.com/Yuvraj049/WOC6.0-react-IRCTC-clone-Yuvraj.git
+   https://github.com/Yuvraj049/IRCTC-Clone.git
    ```
 
 2. **Install Dependencies**
