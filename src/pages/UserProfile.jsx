@@ -73,6 +73,7 @@ function UserProfile() {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    console.log(file);
     if (file && file.type.startsWith("image/")) {
       setPhoto(file);
     } else {
@@ -89,9 +90,9 @@ function UserProfile() {
     }
     const fileRef = ref(storage, user.uid + ".png");
     console.log(fileRef);
-    await uploadBytes(fileRef, photo)
+    await uploadBytes(fileRef, photo);
     const photoURL = await getDownloadURL(fileRef);
-    updateProfile(user, { photoURL: photoURL })
+    updateProfile(user, { photoURL: photoURL });
     window.scrollTo({top:0,behavior:"smooth"});
     showAlert("Profile Photo Updated","success");
   }

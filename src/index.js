@@ -6,7 +6,8 @@ import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+    // It is a development-only feature that performs additional checks and warnings to ensure that your application follows best practices and is free of certain types of issues. It does not affect the production build of your application.
+  <React.StrictMode> 
     <App />
   </React.StrictMode>
 );

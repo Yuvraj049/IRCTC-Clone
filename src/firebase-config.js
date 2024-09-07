@@ -11,10 +11,10 @@ const firebaseConfig = {
     messagingSenderId: "794142981718",
     appId: "1:794142981718:web:5ef813d5a2829a5d3005f7",
     measurementId: "G-6YB50NN1Q6"
-  };
-  const app = initializeApp(firebaseConfig);
-  
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage=getStorage(app);
-  export {auth,db,storage};
+};
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage=getStorage(app);
+export {auth,db,storage};
